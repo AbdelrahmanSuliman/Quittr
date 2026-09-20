@@ -68,9 +68,9 @@ export async function updateAddictionController(
 ) {
   const addictionId = req.params.addictionId;
   const userId = req.user!.userId;
-  const { addictionName } = req.body;
+  const { name } = req.body;
   try {
-    await updateAddictionService(addictionId, addictionName, userId);
+    await updateAddictionService(addictionId, name, userId);
 
     res
       .status(StatusCodes.OK)
