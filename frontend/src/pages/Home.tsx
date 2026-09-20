@@ -26,9 +26,12 @@ import type { Addiction } from "@/api/addiction";
 import { useDeleteAddiction } from "@/hooks/addiction/useDeleteAddiction";
 import useLogout from "@/hooks/auth/useLogout";
 import useRenameAddiction from "@/hooks/addiction/useRenameAddiction";
+import { toast } from "sonner";
 
 function Home() {
   const [showInvitationScreen, setShowInvitationScreen] = useState(false);
+  const [showAddictionCreationDialog, setShowAddictionCreationDialog] =
+    useState(false);
   const [invitationLink, setInvitationLink] = useState("");
   const [currentAddiction, setCurrentAddiction] = useState<Addiction>();
 
@@ -44,21 +47,35 @@ function Home() {
     deleteAddictionMutation.mutate(addictionId, {
       onSuccess: () => {
         console.log("Deleted successfully");
+        toast.success("Addiction Deleted Successfully!");
       },
-      onError: (e) => console.log(e.message),
+      onError: (e) => {
+        toast.error(e.message);
+        console.log(e.message);
+      },
     });
   };
 
   const onAddictionRenameSubmit = (addictionId: string, newName: string) => {
-    console.log("Addiction ID: ", addictionId, "New Name: ", newName)
+    console.log("Addiction ID: ", addictionId, "New Name: ", newName);
     renameAddictionMutation.mutate({
       addictionId: addictionId,
       name: newName,
+    }, {
+      onSuccess: () => {
+        console.log("Addiction Renamed Successfully")
+        toast.success("Addicition Renamed Succesfully")
+      }, 
+      onError: (e) => {
+        console.log(e.message)
+        toast.error(e.message)
+      }
     });
   };
 
   const onLogout = () => {
     getLogoutMutation.mutate();
+    toast.info("Logged Out Successfully")
   };
 
   const onAddictionCreationSubmit = (e: React.FormEvent<HTMLFormElement>) => {
@@ -71,9 +88,15 @@ function Home() {
           onSuccess: (invitation) => {
             setInvitationLink(invitation.invitationLink);
             setShowInvitationScreen(true);
+            setShowAddictionCreationDialog(false);
+            toast.success("Addiction Created Successfully!")
           },
         });
       },
+      onError: (e) => {
+        console.log(e.message)
+        toast.error(e.message)
+      }
     });
   };
 
@@ -87,7 +110,10 @@ function Home() {
         <div className="lg:w-1/3 flex flex-col gap-4">
           <div className="flex flex-row justify-between gap-2">
             <h2>Addictions</h2>
-            <Dialog>
+            <Dialog
+              open={showAddictionCreationDialog}
+              onOpenChange={setShowAddictionCreationDialog}
+            >
               <DialogTrigger render={<Button>Create Addiction</Button>} />
               <DialogContent>
                 <form

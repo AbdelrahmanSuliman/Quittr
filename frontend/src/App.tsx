@@ -5,12 +5,14 @@ import Home from "./pages/Home";
 import "./globals.css";
 import Login from "./pages/Login";
 import ProtectedRoute from "./components/ProtectedRoute";
+import { Toaster } from "@/components/ui/sonner";
 
 const queryClient = new QueryClient();
 
 function App() {
   return (
     <QueryClientProvider client={queryClient}>
+      <Toaster />
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<Navigate to="/home" replace />} />
