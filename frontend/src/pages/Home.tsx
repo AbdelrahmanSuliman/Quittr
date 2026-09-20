@@ -25,11 +25,9 @@ import AddictionItem from "@/components/AddictionItem";
 import type { Addiction } from "@/api/addiction";
 import { useDeleteAddiction } from "@/hooks/addiction/useDeleteAddiction";
 import useLogout from "@/hooks/auth/useLogout";
-function Home() {
-  {
-    /*Add nav*/
-  }
+import useRenameAddiction from "@/hooks/addiction/useRenameAddiction";
 
+function Home() {
   const [showInvitationScreen, setShowInvitationScreen] = useState(false);
   const [invitationLink, setInvitationLink] = useState("");
   const [currentAddiction, setCurrentAddiction] = useState<Addiction>();
@@ -38,9 +36,8 @@ function Home() {
   const deleteAddictionMutation = useDeleteAddiction();
   const createInvitationMutation = useCreateInvitation();
   const getAddictionsQuery = useGetAddictions();
-  const getLogoutMutation = useLogout()
-
-
+  const getLogoutMutation = useLogout();
+  const renameAddictionMutation = useRenameAddiction();
 
   const onAddictionDeletionSubmit = (addictionId: string) => {
     console.log(addictionId);
@@ -52,16 +49,24 @@ function Home() {
     });
   };
 
+  const onAddictionRenameSubmit = (addictionId: string, newName: string) => {
+    console.log("Addiction ID: ", addictionId, "New Name: ", newName)
+    renameAddictionMutation.mutate({
+      addictionId: addictionId,
+      name: newName,
+    });
+  };
+
   const onLogout = () => {
-    getLogoutMutation.mutate()
-  }
+    getLogoutMutation.mutate();
+  };
 
   const onAddictionCreationSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const formData = new FormData(e.currentTarget);
     const name = formData.get("name") as string;
     createAddictionMutation.mutate(name, {
-      onSuccess: (addiction) => { 
+      onSuccess: (addiction) => {
         createInvitationMutation.mutate(addiction.id, {
           onSuccess: (invitation) => {
             setInvitationLink(invitation.invitationLink);
@@ -142,6 +147,9 @@ function Home() {
                   addiction={addiction}
                   onSelect={() => setCurrentAddiction(addiction)}
                   onDelete={() => onAddictionDeletionSubmit(addiction.id)}
+                  onRename={(newName) =>
+                    onAddictionRenameSubmit(addiction.id, newName)
+                  }
                 />
               ))}
             </CollapsibleContent>
