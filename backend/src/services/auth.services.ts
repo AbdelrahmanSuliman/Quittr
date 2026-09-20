@@ -4,6 +4,7 @@ import db from "../db/index";
 import * as t from "../db/schema";
 import bcrypt from "bcrypt";
 import config from "../config/index";
+import { eq } from "drizzle-orm";
 
 export async function signupService(
   username: string,
@@ -65,11 +66,33 @@ export async function loginService(email: string, password: string) {
 export async function getCurrentUserService(userId: string) {
   const user = await db.query.users.findFirst({
     where: {
-      id: userId
-    }
-  })
+      id: userId,
+    },
+  });
 
   if (!user) throw new NotFoundError("This user does not exist");
-  
-  return user
+
+  return user;
+}
+
+export async function resetPasswordService(
+  userId: string,
+  newPassword: string,
+) {
+  const user = await db.query.users.findFirst({
+    where: {
+      id: userId,
+    },
+  });
+
+  if (!user) throw new NotFoundError("This user does not exist");
+
+  const saltRounds = config.saltRounds;
+
+  const hashedPassword = await bcrypt.hash(newPassword, saltRounds);
+
+  await db
+    .update(t.users)
+    .set({ passwordHash: hashedPassword })
+    .where(eq(t.users.id, userId));
 }
