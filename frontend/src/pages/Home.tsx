@@ -78,7 +78,7 @@ function Home() {
     toast.info("Logged Out Successfully")
   };
 
-  const onAddictionCreationSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const onAddictionCreationSubmit = (e: React.SubmitEvent<HTMLFormElement>) => {
     e.preventDefault();
     const formData = new FormData(e.currentTarget);
     const name = formData.get("name") as string;

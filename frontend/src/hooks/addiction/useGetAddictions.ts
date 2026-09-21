@@ -5,5 +5,5 @@ export function useGetAddictions() {
   return useQuery({
     queryKey: ["addictions"],
     queryFn: getAllAddictions,
-  });
+  },);
 }
