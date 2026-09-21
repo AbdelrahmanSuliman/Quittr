@@ -19,7 +19,7 @@ import {
 } from "@/components/ui/dialog";
 import { ChevronDown, Loader } from "lucide-react";
 import { Input } from "@/components/ui/input";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useGetAddictions } from "@/hooks/addiction/useGetAddictions";
 import AddictionItem from "@/components/AddictionItem";
 import type { Addiction } from "@/api/addiction";
@@ -27,6 +27,7 @@ import { useDeleteAddiction } from "@/hooks/addiction/useDeleteAddiction";
 import useLogout from "@/hooks/auth/useLogout";
 import useRenameAddiction from "@/hooks/addiction/useRenameAddiction";
 import { toast } from "sonner";
+import AddictionCalendar from "@/components/AddictionCalendar";
 
 function Home() {
   const [showInvitationScreen, setShowInvitationScreen] = useState(false);
@@ -57,25 +58,27 @@ function Home() {
   };
 
   const onAddictionRenameSubmit = (addictionId: string, newName: string) => {
-    console.log("Addiction ID: ", addictionId, "New Name: ", newName);
-    renameAddictionMutation.mutate({
-      addictionId: addictionId,
-      name: newName,
-    }, {
-      onSuccess: () => {
-        console.log("Addiction Renamed Successfully")
-        toast.success("Addicition Renamed Succesfully")
-      }, 
-      onError: (e) => {
-        console.log(e.message)
-        toast.error(e.message)
-      }
-    });
+    renameAddictionMutation.mutate(
+      {
+        addictionId: addictionId,
+        name: newName,
+      },
+      {
+        onSuccess: () => {
+          console.log("Addiction Renamed Successfully");
+          toast.success("Addicition Renamed Succesfully");
+        },
+        onError: (e) => {
+          console.log(e.message);
+          toast.error(e.message);
+        },
+      },
+    );
   };
 
   const onLogout = () => {
     getLogoutMutation.mutate();
-    toast.info("Logged Out Successfully")
+    toast.info("Logged Out Successfully");
   };
 
   const onAddictionCreationSubmit = (e: React.SubmitEvent<HTMLFormElement>) => {
@@ -89,14 +92,14 @@ function Home() {
             setInvitationLink(invitation.invitationLink);
             setShowInvitationScreen(true);
             setShowAddictionCreationDialog(false);
-            toast.success("Addiction Created Successfully!")
+            toast.success("Addiction Created Successfully!");
           },
         });
       },
       onError: (e) => {
-        console.log(e.message)
-        toast.error(e.message)
-      }
+        console.log(e.message);
+        toast.error(e.message);
+      },
     });
   };
 
@@ -161,7 +164,7 @@ function Home() {
             <CollapsibleTrigger className="flex w-full items-center justify-between">
               <span className="font-semibold">Your Addictions</span>
               <ChevronDown />
-            </CollapsibleTrigger>{" "}
+            </CollapsibleTrigger>
             <CollapsibleContent className="mt-2 space-y-2">
               {getAddictionsQuery.isLoading && <Loader />}
               {getAddictionsQuery.isError && (
@@ -182,12 +185,18 @@ function Home() {
           </Collapsible>
         </div>
 
-        <Card className="lg:w-2/3">
-          <CardHeader>
-            <CardTitle>Dashboard</CardTitle>
-          </CardHeader>
-
-          <CardContent>{/* Calendar + Journal */}</CardContent>
+        <Card className="lg:w-2/3 p-8 flex items-center pt-12">
+          {currentAddiction ? (
+            <AddictionCalendar addictionId={currentAddiction.id} />
+          ) : (
+            <div className="text-center text-muted-foreground">
+              <p className="text-lg font-medium">No addiction selected</p>
+              <p className="text-sm">
+                Select an addiction from the sidebar or create a new one to view
+                your calendar.
+              </p>
+            </div>
+          )}
         </Card>
       </main>
       <Dialog
@@ -196,7 +205,7 @@ function Home() {
       >
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Invite an Accountability Partner</DialogTitle>{" "}
+            <DialogTitle>Invite an Accountability Partner</DialogTitle>
             <DialogDescription>
               Share this link with someone you trust. They can use it to join
               this addiction as your accountability partner.
