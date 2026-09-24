@@ -82,6 +82,38 @@ export async function getAllJournalEntriesService(
   return journalEntries;
 }
 
+export async function getJournalEntryByDateService(
+  userId: string,
+  addictionId: string,
+  date: string,
+) {
+  const journalEntries = await db
+    .select({
+      id: t.journalEntries.id,
+      content: t.journalEntries.content,
+      succeeded: t.journalEntries.succeeded,
+      date: t.journalEntries.date,
+      addictionId: t.journalEntries.addictionId,
+      createdAt: t.journalEntries.createdAt,
+      updatedAt: t.journalEntries.updatedAt,
+    })
+    .from(t.journalEntries)
+    .innerJoin(t.addictions, eq(t.journalEntries.addictionId, t.addictions.id))
+    .where(
+      and(
+        eq(t.journalEntries.addictionId, addictionId),
+        eq(t.addictions.userId, userId),
+        eq(t.journalEntries.date, date),
+      ),
+    );
+
+  if (!journalEntries[0])
+    throw new NotFoundError("No journal exists for this date");
+
+  return journalEntries[0];
+}
+
+
 export async function getAllPartneredJournalEntriesService(
   userId: string,
   addictionId: string,

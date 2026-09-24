@@ -1,8 +1,10 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { DatePicker } from "./DatePicker";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import useCreateJournalEntry from "@/hooks/journal/useCreateJournalEntry";
+import useGetJournalEntryByDate from "@/hooks/journal/useGetJournalEntryByDate";
+import useUpdateJournalEntryById from "@/hooks/journal/useUpdateJournalEntryById";
 
 interface AddictionCalendarProps {
   addictionId: string;
@@ -14,34 +16,65 @@ function AddictionCalendar({ addictionId }: AddictionCalendarProps) {
   const [succeeded, setSucceeded] = useState(true);
 
   const createEntryMutation = useCreateJournalEntry();
+  const updateEntryMutation = useUpdateJournalEntryById();
+
+  const selectedDate = date ? date.toISOString().split("T")[0] : "";
+
+  const { data: journalEntry } = useGetJournalEntryByDate(
+    addictionId,
+    selectedDate,
+  );
+
+  useEffect(() => {
+    if (!journalEntry) {
+      setContent("");
+      setSucceeded(true);
+      return;
+    }
+    setContent(journalEntry.content ?? "");
+    setSucceeded(journalEntry.succeeded ?? true);
+  }, [journalEntry]);
 
   const handleSave = () => {
     if (!date) {
       toast.error("Please select a date before saving.");
       return;
     }
-    console.log({
-      date: date?.toISOString().split("T")[0],
-      content,
-      succeeded,
-    });
-    createEntryMutation.mutate(
-      {
-        addictionId,
-        succeeded,
-        content,
-        targetDate: date,
-      },
-      {
-        onSuccess: () => {
-          toast("Entry Saved Successfully");
+    if (!journalEntry) {
+      createEntryMutation.mutate(
+        {
+          addictionId,
+          succeeded,
+          content,
+          targetDate: date,
         },
-        onError: (e) => {
-          console.error(e.message);
-          toast(e.message);
+        {
+          onSuccess: () => {
+            toast("Entry Saved Successfully");
+          },
         },
-      },
-    );
+      );
+    } else {
+      updateEntryMutation.mutate(
+        {
+          addictionId,
+          entryId: journalEntry.id,
+          targetDate: selectedDate,
+          content,
+          succeeded,
+        },
+        {
+          onSuccess: () => {
+            toast("Entry Updated Successfully");
+          },
+          onError: (e) => {
+            console.error(e.message);
+            console.log("Addiction ID: ", addictionId)
+            toast(e.message);
+          },
+        },
+      );
+    }
   };
 
   return (
@@ -72,7 +105,7 @@ function AddictionCalendar({ addictionId }: AddictionCalendarProps) {
 
         <div className="flex justify-end pt-2 border-t border-border/40">
           <Button size="sm" onClick={handleSave}>
-            Save Entry
+            {journalEntry ? "Update Entry" : "Save Entry"}
           </Button>
         </div>
       </div>
