@@ -7,6 +7,7 @@ import {
   updateJournalEntryController,
   getAllPartneredJournalEntriesController,
   getJournalEntryByDateController,
+  getPartneredJournalEntryByDateController,
 } from "../controllers/journal.controller";
 import { validateData } from "../middleware/validation.middleware";
 import {
@@ -48,6 +49,15 @@ journalRouter.get(
     query: JournalDateQuerySchema,
   }),
   getJournalEntryByDateController,
+);
+journalRouter.get(
+  "/:addictionId/date/partnered",
+  verifyToken,
+  validateData({
+    params: AddictionIdParamSchema,
+    query: JournalDateQuerySchema,
+  }),
+  getPartneredJournalEntryByDateController,
 );
 journalRouter.get(
   "/:addictionId/partnered",

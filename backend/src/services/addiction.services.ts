@@ -32,6 +32,34 @@ export async function fetchAllAddictionsService(
   return addictions;
 }
 
+
+export async function fetchAllPartneredAddictionsService(
+  userId: string,
+  page: number = 1,
+  pageSize: number = 10,
+) {
+  const addictions = await db
+    .select({
+      id: t.addictions.id,
+      name: t.addictions.name,
+      userId: t.addictions.userId,
+      createdAt: t.addictions.createdAt,
+    })
+    .from(t.addictions)
+    .innerJoin(t.invitations, eq(t.invitations.addictionId, t.addictions.id))
+    .where(
+      and(
+        eq(t.invitations.receiverId, userId),
+        eq(t.invitations.status, "accepted"),
+      ),
+    )
+    .orderBy(desc(t.addictions.createdAt))
+    .limit(pageSize)
+    .offset((page - 1) * pageSize);
+
+  return addictions;
+}
+
 export async function updateAddictionService(
   addictionId: string,
   addictionName: string,

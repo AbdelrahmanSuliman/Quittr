@@ -10,7 +10,7 @@ export interface Addiction {
   partnerId: string | null;
 }
 
-export interface getAllAddictionsResponse {
+export interface GetAllAddictionsResponse {
   createdAt: Date;
   updatedAt: Date;
   deletedAt: Date | null;
@@ -19,7 +19,7 @@ export interface getAllAddictionsResponse {
   userId: string;
   partnerId: string | null;
 }
-export interface createAddictionResponse {
+export interface CreateAddictionResponse {
   id: string;
   createdAt: Date;
   updatedAt: Date;
@@ -31,15 +31,22 @@ export interface createAddictionResponse {
 
 export const createAddiction = async (
   name: string,
-): Promise<createAddictionResponse> => {
+): Promise<CreateAddictionResponse> => {
   const response = await api.post("/addictions", { name });
   return response.data.data;
 };
 
 export const getAllAddictions = async (): Promise<
-  getAllAddictionsResponse[]
+  GetAllAddictionsResponse[]
 > => {
   const response = await api.get("/addictions");
+  return response.data.data;
+};
+
+export const getAllPartneredAddictions = async (): Promise<
+  GetAllAddictionsResponse[]
+> => {
+  const response = await api.get("/addictions/partnered");
   return response.data.data;
 };
 

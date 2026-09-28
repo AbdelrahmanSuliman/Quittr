@@ -6,6 +6,7 @@ import {
   deleteJournalEntryService,
   getAllPartneredJournalEntriesService,
   getJournalEntryByDateService,
+  getPartneredJournalEntryByDateService,
 } from "../services/journal.services";
 import type { NextFunction, Request, Response } from "express";
 
@@ -93,7 +94,29 @@ export async function getJournalEntryByDateController(
     );
     res
       .status(StatusCodes.OK)
-      .send({ message: "Journal fetched successfully", data: journalEntry });
+      .send({ message: "Journal entry fetched successfully", data: journalEntry });
+  } catch (err) {
+    next(err);
+  }
+}
+
+export async function getPartneredJournalEntryByDateController(
+  req: Request<{ addictionId: string }, {}, {}, { date: string }>,
+  res: Response,
+  next: NextFunction,
+) {
+  const userId = req.user!.userId;
+  const addictionId = req.params.addictionId;
+  const date = req.query.date;
+  try {
+    const journalEntry = await getPartneredJournalEntryByDateService(
+      userId,
+      addictionId,
+      date,
+    );
+    res
+      .status(StatusCodes.OK)
+      .send({ message: "Journal entry fetched successfully", data: journalEntry });
   } catch (err) {
     next(err);
   }

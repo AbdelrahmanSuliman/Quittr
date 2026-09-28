@@ -8,8 +8,11 @@ import {
   fetchSentInvitationsController,
 } from "../controllers/invitation.controller";
 import { validateData } from "../middleware/validation.middleware";
-import { InvitationIdParamSchema } from "../schema/id.schema";
-import { createInvitationSchema, fetchInvitationSchema } from "../schema/invitation.schema";
+import { InvitationTokenParamSchema } from "../schema/id.schema";
+import {
+  createInvitationSchema,
+  fetchInvitationSchema,
+} from "../schema/invitation.schema";
 
 const invitationRouter = express.Router();
 
@@ -17,20 +20,25 @@ invitationRouter.get("/sent", verifyToken, fetchSentInvitationsController);
 invitationRouter.get(
   "/received",
   verifyToken,
-  validateData({query: fetchInvitationSchema}),
+  validateData({ query: fetchInvitationSchema }),
   fetchReceivedInvitationsController,
 );
-invitationRouter.post("/", verifyToken, validateData({body: createInvitationSchema}),createInvitationController);
+invitationRouter.post(
+  "/",
+  verifyToken,
+  validateData({ body: createInvitationSchema }),
+  createInvitationController,
+);
 invitationRouter.patch(
   "/:token/accept",
   verifyToken,
-  validateData({ params: InvitationIdParamSchema }),
+  validateData({ params: InvitationTokenParamSchema }),
   acceptInvitationController,
 );
 invitationRouter.delete(
   "/:invitationId",
   verifyToken,
-  validateData({ params: InvitationIdParamSchema }),
+  validateData({ params: InvitationTokenParamSchema }),
   deleteInvitationController,
 );
 

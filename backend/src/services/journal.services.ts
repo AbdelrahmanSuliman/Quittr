@@ -107,12 +107,38 @@ export async function getJournalEntryByDateService(
       ),
     );
 
-  if (!journalEntries[0])
-    throw new NotFoundError("No journal exists for this date");
-
-  return journalEntries[0];
+  return journalEntries[0] ?? null;
 }
 
+export async function getPartneredJournalEntryByDateService(
+  userId: string,
+  addictionId: string,
+  date: string,
+) {
+  const journalEntries = await db
+    .select({
+      id: t.journalEntries.id,
+      content: t.journalEntries.content,
+      succeeded: t.journalEntries.succeeded,
+      date: t.journalEntries.date,
+      addictionId: t.journalEntries.addictionId,
+      createdAt: t.journalEntries.createdAt,
+      updatedAt: t.journalEntries.updatedAt,
+    })
+    .from(t.journalEntries)
+    .innerJoin(t.addictions, eq(t.journalEntries.addictionId, t.addictions.id))
+    .where(
+      and(
+        eq(t.journalEntries.addictionId, addictionId),
+        eq(t.addictions.partnerId, userId),
+        eq(t.journalEntries.date, date),
+      ),
+  );
+  
+  console.log(journalEntries)
+
+  return journalEntries[0] ?? null;
+}
 
 export async function getAllPartneredJournalEntriesService(
   userId: string,

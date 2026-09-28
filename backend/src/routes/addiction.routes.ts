@@ -9,6 +9,7 @@ import {
   fetchAddictionsController,
   deleteAddictionController,
   updateAddictionController,
+  fetchPartneredAddictionsController,
 } from "../controllers/addiction.controller";
 import verifyToken from "../middleware/verifyToken.middleware";
 import { AddictionIdParamSchema, IDParamSchema } from "../schema/id.schema";
@@ -22,6 +23,7 @@ addictionRouter.post(
   createAddictionController,
 );
 addictionRouter.get("/", verifyToken, fetchAddictionsController);
+addictionRouter.get("/partnered", verifyToken, fetchPartneredAddictionsController)
 addictionRouter.delete(
   "/:addictionId",
   verifyToken,

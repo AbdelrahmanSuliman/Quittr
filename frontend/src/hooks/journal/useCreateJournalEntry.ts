@@ -9,7 +9,7 @@ export default function useCreateJournalEntry() {
 
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: ["addictions"],
+        queryKey: ["journalEntries"],
       });
     },
   });

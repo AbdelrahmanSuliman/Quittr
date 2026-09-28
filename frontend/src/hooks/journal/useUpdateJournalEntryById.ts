@@ -9,7 +9,7 @@ export default function useUpdateJournalEntryById() {
 
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: ["addictions"],
+        queryKey: ["journalEntries"],
       });
     },
   });

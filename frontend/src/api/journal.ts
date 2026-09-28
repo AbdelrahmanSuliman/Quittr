@@ -58,6 +58,19 @@ export const getJournalEntryByDate = async ({
   return response.data.data;
 };
 
+export const getPartneredJournalEntryByDate = async ({
+  addictionId,
+  date,
+}: GetJournalEntryByDateData) => {
+  const response = await api.get(`/journals/${addictionId}/date/partnered`, {
+    params: {
+      date,
+    },
+  });
+
+  return response.data.data;
+};
+
 export const updateJournalEntryById = async ({
   addictionId,
   entryId,

@@ -22,3 +22,8 @@ export const createInvitation = async (addictionId: string): Promise<CreateInvit
 
   return response.data.data;
 };
+
+export const acceptInvitation = async (token: string) => {
+  const response = await api.patch(`/invitations/${token}/accept`)
+  return response.data.data
+}

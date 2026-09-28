@@ -6,6 +6,7 @@ import "./globals.css";
 import Login from "./pages/Login";
 import ProtectedRoute from "./components/ProtectedRoute";
 import { Toaster } from "@/components/ui/sonner";
+import InvitePage from "./pages/InvitePage";
 
 const queryClient = new QueryClient();
 
@@ -16,6 +17,7 @@ function App() {
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<Navigate to="/home" replace />} />
+          <Route path="/invite/:token" element={<InvitePage />} />
           <Route path="/signup" element={<Signup />} />
           <Route element={<ProtectedRoute />}>
             <Route path="/home" element={<Home />} />
