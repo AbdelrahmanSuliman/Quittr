@@ -10,12 +10,13 @@ import invitationRouter from "./routes/invitation.routes";
 import cors from "cors";
 import cookieParser from "cookie-parser";
 const app = express();
+import config from "./config";
 
 // Global Middleware
 app.use(cookieParser());
 app.use(
   cors({
-    origin: "http://localhost:5173",
+    origin: ,
   }),
 );
 app.use(helmet());
