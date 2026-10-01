@@ -16,7 +16,8 @@ import config from "./config";
 app.use(cookieParser());
 app.use(
   cors({
-    origin: ,
+    origin: config.frontendUrl,
+    credentials: true
   }),
 );
 app.use(helmet());

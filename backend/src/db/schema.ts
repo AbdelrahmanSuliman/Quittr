@@ -13,7 +13,6 @@ const timestamps = {
   deletedAt: t.timestamp("deleted_at"),
 };
 
-
 export const users = t.pgTable("users", {
   id: t.uuid("id").primaryKey().defaultRandom(),
   email: t.varchar({ length: 255 }).notNull().unique(),
@@ -31,8 +30,8 @@ export const invitations = t.pgTable("invitations", {
     .references(() => users.id, { onDelete: "cascade" }),
   receiverId: t
     .uuid("partner_id")
-    .notNull()
     .references(() => users.id, { onDelete: "cascade" }),
+  token: t.uuid("token").defaultRandom().notNull().unique(),
   addictionId: t
     .uuid("addiction_id")
     .notNull()
@@ -63,7 +62,10 @@ export const journalEntries = t.pgTable("journal_entries", {
   content: t.text(),
   succeeded: t.boolean(),
   date: t.date(),
-  addictionId: t.uuid("addiction_id").notNull().references(() => addictions.id),
+  addictionId: t
+    .uuid("addiction_id")
+    .notNull()
+    .references(() => addictions.id),
   ...timestamps,
 });
 

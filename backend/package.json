@@ -7,7 +7,7 @@
     "start": "node dist/index.js",
     "build": "tsup",
     "test": "vitest run",
-    "dev": "nodemon --exec tsx ./src/index.ts | pino-pretty"
+    "dev": "docker compose up -d && nodemon --exec tsx ./src/index.ts | pino-pretty"
   },
   "keywords": [],
   "author": "",

@@ -14,7 +14,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useNavigate } from "react-router";
 
-import useSignup from "@/hooks/useSignup";
+import useSignup from "@/hooks/auth/useSignup";
 import axios from "axios";
 
 function Signup() {

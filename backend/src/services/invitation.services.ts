@@ -3,6 +3,7 @@ import db from "../db/index";
 import * as t from "../db/schema";
 import { ConflictError, ForbiddenError, NotFoundError } from "../util/error";
 import logger from "../util/logger";
+import config from "../config";
 
 export type InvitationStatusEnum = "accepted" | "pending" | "rejected";
 
@@ -45,7 +46,6 @@ export async function fetchReceivedInvitationsService(
 
 export async function createInvitationService(
   senderId: string,
-  receiverId: string,
   addictionId: string,
 ) {
   const [existingInvitation] = await db
@@ -54,55 +54,73 @@ export async function createInvitationService(
     .where(
       and(
         eq(t.invitations.senderId, senderId),
-        eq(t.invitations.receiverId, receiverId),
         eq(t.invitations.addictionId, addictionId),
         eq(t.invitations.status, "pending"),
       ),
     );
 
   if (existingInvitation) {
-    throw new ConflictError("Invitation to the receiver already exists.");
+    throw new ConflictError(
+      "A pending invitation already exists for this addiction.",
+    );
   }
   const [newInvitation] = await db
     .insert(t.invitations)
     .values({
       senderId,
-      receiverId,
       addictionId,
     })
     .returning();
+  const invitationLink = `${config.frontendUrl}/invite/${newInvitation?.token}`;
   logger.info(newInvitation);
-  return newInvitation;
+  return { newInvitation, invitationLink };
 }
 
 export async function acceptInvitationService(
   currentUserId: string,
-  invitationId: string,
+  token: string,
 ) {
-  const [invitation] = await db
-    .select()
+  const [result] = await db
+    .select({
+      invitation: t.invitations,
+      addiction: t.addictions,
+    })
     .from(t.invitations)
-    .where(eq(t.invitations.id, invitationId));
+    .innerJoin(t.addictions, eq(t.invitations.addictionId, t.addictions.id))
+    .where(eq(t.invitations.token, token));
 
-  if (!invitation) throw new NotFoundError("Invitation does not exist.");
+  if (!result) throw new NotFoundError("Invitation does not exist.");
 
-  if (invitation.receiverId !== currentUserId)
-    throw new ForbiddenError(
-      "You are not authorized to accept this invitation.",
-    );
+  const { invitation, addiction } = result;
+
+  if (invitation.senderId === currentUserId) {
+    throw new ForbiddenError("You cannot accept your own invitation.");
+  }
 
   if (invitation.status !== "pending")
     throw new ConflictError(
       `Cannot accept invitation with status ${invitation.status}.`,
     );
+
+  if (!addiction) {
+    throw new NotFoundError("Addiction does not exist.");
+  }
+
+  if (addiction.partnerId) {
+    throw new ConflictError("This addiction already has a partner.");
+  }
+
   await db.transaction(async (tx) => {
     await tx
       .update(t.invitations)
-      .set({ status: "accepted" })
+      .set({
+        status: "accepted",
+        receiverId: currentUserId,
+      })
       .where(eq(t.invitations.id, invitation.id));
     await tx
       .update(t.addictions)
-      .set({ partnerId: currentUserId })  
+      .set({ partnerId: currentUserId })
       .where(eq(t.addictions.id, invitation.addictionId));
   });
 }
