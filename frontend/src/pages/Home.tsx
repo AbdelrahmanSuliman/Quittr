@@ -202,6 +202,7 @@ function Home() {
                     setCurrentAddiction(addiction);
                     setCurrentPartneredAddiction(undefined);
                   }}
+                  isSelected
                   onDelete={() => onAddictionDeletionSubmit(addiction.id)}
                   onRename={(newName) =>
                     onAddictionRenameSubmit(addiction.id, newName)
@@ -229,6 +230,7 @@ function Home() {
 
               {getPartneredAddictionsQuery.data?.map((addiction) => (
                 <PartneredAddictionItem
+                  isSelected
                   key={addiction.id}
                   addiction={addiction}
                   onSelect={() => {
