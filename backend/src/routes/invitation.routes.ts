@@ -8,7 +8,10 @@ import {
   fetchSentInvitationsController,
 } from "../controllers/invitation.controller";
 import { validateData } from "../middleware/validation.middleware";
-import { InvitationTokenParamSchema } from "../schema/id.schema";
+import {
+  InvitationTokenParamSchema,
+  InvitationIdParamSchema,
+} from "../schema/id.schema";
 import {
   createInvitationSchema,
   fetchInvitationSchema,
@@ -38,7 +41,7 @@ invitationRouter.patch(
 invitationRouter.delete(
   "/:invitationId",
   verifyToken,
-  validateData({ params: InvitationTokenParamSchema }),
+  validateData({ params: InvitationIdParamSchema }),
   deleteInvitationController,
 );
 
