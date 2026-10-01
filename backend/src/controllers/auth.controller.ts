@@ -44,7 +44,7 @@ export async function loginController(
     const token = generateToken(user.id, user.username);
     res.cookie("token", token, {
       httpOnly: true,
-      sameSite: "strict",
+      sameSite: config.nodeEnv === "production" ? "none" : "lax",
       secure: config.nodeEnv === "production",
       maxAge: 60 * 60 * 1000,
       path: "/",
@@ -83,13 +83,13 @@ export async function logoutController(
     res.clearCookie("token", {
       httpOnly: true,
       secure: config.nodeEnv === "production",
-      sameSite: "lax"
-    })
+      sameSite: config.nodeEnv === "production" ? "none" : "lax",
+      path: "/",
+    });
     res.status(StatusCodes.OK).json({
-      message: "User logged out successfully"
-    })
+      message: "User logged out successfully",
+    });
   } catch (err) {
-    next(err)
+    next(err);
   }
 }
-
