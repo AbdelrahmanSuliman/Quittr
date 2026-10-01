@@ -16,7 +16,7 @@ import useLogin from "@/hooks/auth/useLogin";
 import axios from "axios";
 
 function Login() {
-  let navigate = useNavigate();
+  const navigate = useNavigate();
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
