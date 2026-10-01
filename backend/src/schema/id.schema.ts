@@ -20,3 +20,7 @@ export const EntryIdParamsSchema = z.object({
 export const InvitationTokenParamSchema = z.object({
   token: z.uuid("Invalid invitation ID format"),
 });
+
+export const InvitationIdParamSchema = z.object({
+  invitationId: z.uuid("Invalid invitation ID format"),
+});

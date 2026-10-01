@@ -3,6 +3,7 @@ import * as z from "zod";
 const maxLength = 1000;
 
 export const AddJournalEntrySchema = z.object({
+  addictionId: z.uuid("Addiction ID must be valid"),
   content: z.string("Content must be a valid string").max(maxLength),
   succeeded: z.boolean("Succeeded must be a boolean"),
   targetDate: z.coerce.date("Target date must be valid"),
