@@ -2,7 +2,7 @@ import "dotenv/config";
 import express from "express";
 import helmet from "helmet";
 import errorHandler from "./middleware/error.handler";
-import limiter from "./middleware/limiter.middleware";
+import { apiLimiter } from "./middleware/limiter.middleware";
 import authRouter from "./routes/auth.routes";
 import addictionRouter from "./routes/addiction.routes";
 import journalRouter from "./routes/journal.routes";
@@ -21,7 +21,7 @@ app.use(
   }),
 );
 app.use(helmet());
-app.use(limiter);
+app.use(apiLimiter);
 app.use(express.json());
 
 // Router Mounting
