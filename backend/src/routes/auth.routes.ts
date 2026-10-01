@@ -3,11 +3,12 @@ import { loginController, signupController, getCurrentUserController, logoutCont
 import { validateData } from "../middleware/validation.middleware";
 import { UserLoginSchema, UserSignupSchema } from '../schema/auth.schema'
 import verifyToken from "../middleware/verifyToken.middleware";
+import { loginLimiter, signupLimiter } from "../middleware/limiter.middleware";
 
 const authRouter = express.Router();
 
-authRouter.post("/signup", validateData({body: UserSignupSchema}), signupController);
-authRouter.post("/login", validateData({ body: UserLoginSchema }), loginController)
+authRouter.post("/signup", signupLimiter, validateData({body: UserSignupSchema}), signupController);
+authRouter.post("/login", loginLimiter, validateData({ body: UserLoginSchema }), loginController)
 authRouter.get("/me", verifyToken, getCurrentUserController)
 authRouter.post("/logout",verifyToken, logoutController)
 
