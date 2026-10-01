@@ -142,8 +142,7 @@ vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
 .vite/
 
-# Drizzle fiels
-drizzle
+# Drizzle fieles
 drizzle.config.js
 drizzle.config.js.map
 drizzle.config.d.ts
