@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { DatePicker } from "./DatePicker";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
@@ -10,36 +10,33 @@ interface AddictionCalendarProps {
   addictionId: string;
 }
 
-function AddictionCalendar({ addictionId }: AddictionCalendarProps) {
-  const [date, setDate] = useState<Date | undefined>(new Date());
-  const [content, setContent] = useState("");
-  const [succeeded, setSucceeded] = useState(true);
+interface JournalEditorProps {
+  addictionId: string;
+  selectedDate: string;
+  date: Date;
+  journalEntry:
+    | {
+        id: string;
+        content?: string | null;
+        succeeded?: boolean | null;
+      }
+    | null
+    | undefined;
+}
+
+function JournalEditor({
+  addictionId,
+  selectedDate,
+  date,
+  journalEntry,
+}: JournalEditorProps) {
+  const [content, setContent] = useState(journalEntry?.content ?? "");
+  const [succeeded, setSucceeded] = useState(journalEntry?.succeeded ?? true);
 
   const createEntryMutation = useCreateJournalEntry();
   const updateEntryMutation = useUpdateJournalEntryById();
 
-  const selectedDate = date ? date.toISOString().split("T")[0] : "";
-
-  const { data: journalEntry } = useGetJournalEntryByDate(
-    addictionId,
-    selectedDate,
-  );
-
-  useEffect(() => {
-    if (!journalEntry) {
-      setContent("");
-      setSucceeded(true);
-      return;
-    }
-    setContent(journalEntry.content ?? "");
-    setSucceeded(journalEntry.succeeded ?? true);
-  }, [journalEntry]);
-
   const handleSave = () => {
-    if (!date) {
-      toast.error("Please select a date before saving.");
-      return;
-    }
     if (!journalEntry) {
       createEntryMutation.mutate(
         {
@@ -69,7 +66,7 @@ function AddictionCalendar({ addictionId }: AddictionCalendarProps) {
           },
           onError: (e) => {
             console.error(e.message);
-            console.log("Addiction ID: ", addictionId)
+            console.log("Addiction ID: ", addictionId);
             toast(e.message);
           },
         },
@@ -78,9 +75,8 @@ function AddictionCalendar({ addictionId }: AddictionCalendarProps) {
   };
 
   return (
-    <div className="flex flex-col gap-6 w-full max-w-lg">
+    <>
       <div className="flex items-center justify-between lg:flex-row flex-col gap-4">
-        <DatePicker date={date} setDate={setDate} />
         <Button
           variant="outline"
           size="sm"
@@ -109,6 +105,39 @@ function AddictionCalendar({ addictionId }: AddictionCalendarProps) {
           </Button>
         </div>
       </div>
+    </>
+  );
+}
+
+function AddictionCalendar({ addictionId }: AddictionCalendarProps) {
+  const [date, setDate] = useState<Date | undefined>(new Date());
+
+  const selectedDate = date ? date.toISOString().split("T")[0] : "";
+
+  const { data: journalEntry } = useGetJournalEntryByDate(
+    addictionId,
+    selectedDate,
+  );
+
+  return (
+    <div className="flex flex-col gap-6 w-full max-w-lg">
+      <div className="flex items-center justify-between lg:flex-row flex-col gap-4">
+        <DatePicker date={date} setDate={setDate} />
+      </div>
+
+      {date ? (
+        <JournalEditor
+          key={`${selectedDate}-${journalEntry?.id ?? "new"}`}
+          addictionId={addictionId}
+          selectedDate={selectedDate}
+          date={date}
+          journalEntry={journalEntry}
+        />
+      ) : (
+        <Button size="sm" disabled>
+          Select a date first
+        </Button>
+      )}
     </div>
   );
 }
