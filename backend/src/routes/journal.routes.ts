@@ -6,10 +6,13 @@ import {
   getAllJournalEntriesController,
   updateJournalEntryController,
   getAllPartneredJournalEntriesController,
+  getJournalEntryByDateController,
+  getPartneredJournalEntryByDateController,
 } from "../controllers/journal.controller";
 import { validateData } from "../middleware/validation.middleware";
 import {
   AddJournalEntrySchema,
+  JournalDateQuerySchema,
   UpdateJournalEntrySchema,
 } from "../schema/journal.schema";
 import {
@@ -37,6 +40,24 @@ journalRouter.get(
   verifyToken,
   validateData({ params: AddictionIdParamSchema }),
   getAllJournalEntriesController,
+);
+journalRouter.get(
+  "/:addictionId/date",
+  verifyToken,
+  validateData({
+    params: AddictionIdParamSchema,
+    query: JournalDateQuerySchema,
+  }),
+  getJournalEntryByDateController,
+);
+journalRouter.get(
+  "/:addictionId/date/partnered",
+  verifyToken,
+  validateData({
+    params: AddictionIdParamSchema,
+    query: JournalDateQuerySchema,
+  }),
+  getPartneredJournalEntryByDateController,
 );
 journalRouter.get(
   "/:addictionId/partnered",

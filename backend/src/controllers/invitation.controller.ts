@@ -6,7 +6,7 @@ import {
   fetchSentInvitationsService,
   acceptInvitationService,
   deleteInvitationService,
-  fetchReceivedInvitationsService
+  fetchReceivedInvitationsService,
 } from "../services/invitation.services";
 import { StatusCodes } from "http-status-codes";
 
@@ -66,16 +66,12 @@ export async function createInvitationController(
   next: NextFunction,
 ) {
   const userId = req.user!.userId;
-  const { addictionId, receiverId } = req.body;
+  const { addictionId } = req.body;
   try {
-    const newInvitation = await createInvitationService(
-      userId,
-      receiverId,
-      addictionId,
-    );
-    res.send(StatusCodes.CREATED).json({
+    const {newInvitation, invitationLink} = await createInvitationService(userId, addictionId);
+    res.status(StatusCodes.CREATED).json({
       message: "Invitation created successfully",
-      data: newInvitation,
+      data: { newInvitation, invitationLink },
     });
   } catch (err) {
     next(err);
@@ -83,15 +79,15 @@ export async function createInvitationController(
 }
 
 export async function acceptInvitationController(
-  req: Request<{ invitationId: string }>,
+  req: Request<{ token: string }>,
   res: Response,
   next: NextFunction,
 ) {
   const userId = req.user!.userId;
-  const invitationId = req.params.invitationId;
+  const token = req.params.token;
 
   try {
-    await acceptInvitationService(userId, invitationId);
+    await acceptInvitationService(userId, token);
     res
       .status(StatusCodes.ACCEPTED)
       .send({ message: "Invitation accepted successfully" });

@@ -11,6 +11,7 @@ export const config = ConfigSchema.parse({
     secretKey: process.env.JWT_SECRET,
   },
   nodeEnv: process.env.NODE_ENV,
+  frontendUrl: process.env.FRONTEND_URL,
 });
 
 export default config;

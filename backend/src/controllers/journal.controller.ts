@@ -1,11 +1,12 @@
-import { addictions } from "./../db/schema";
 import { StatusCodes } from "http-status-codes";
 import {
   addJournalEntryService,
   updateJournalEntryService,
   getAllJournalEntriesService,
   deleteJournalEntryService,
-  getAllPartneredJournalEntriesService
+  getAllPartneredJournalEntriesService,
+  getJournalEntryByDateService,
+  getPartneredJournalEntryByDateService,
 } from "../services/journal.services";
 import type { NextFunction, Request, Response } from "express";
 
@@ -72,6 +73,50 @@ export async function getAllJournalEntriesController(
     res
       .status(StatusCodes.OK)
       .send({ message: "Journals fetched successfully", data: journalEntries });
+  } catch (err) {
+    next(err);
+  }
+}
+
+export async function getJournalEntryByDateController(
+  req: Request<{ addictionId: string }, {}, {}, { date: string }>,
+  res: Response,
+  next: NextFunction,
+) {
+  const userId = req.user!.userId;
+  const addictionId = req.params.addictionId;
+  const date = req.query.date;
+  try {
+    const journalEntry = await getJournalEntryByDateService(
+      userId,
+      addictionId,
+      date,
+    );
+    res
+      .status(StatusCodes.OK)
+      .send({ message: "Journal entry fetched successfully", data: journalEntry });
+  } catch (err) {
+    next(err);
+  }
+}
+
+export async function getPartneredJournalEntryByDateController(
+  req: Request<{ addictionId: string }, {}, {}, { date: string }>,
+  res: Response,
+  next: NextFunction,
+) {
+  const userId = req.user!.userId;
+  const addictionId = req.params.addictionId;
+  const date = req.query.date;
+  try {
+    const journalEntry = await getPartneredJournalEntryByDateService(
+      userId,
+      addictionId,
+      date,
+    );
+    res
+      .status(StatusCodes.OK)
+      .send({ message: "Journal entry fetched successfully", data: journalEntry });
   } catch (err) {
     next(err);
   }

@@ -17,8 +17,8 @@ export interface SignupResponse {
 }
 
 export interface LoginData {
-  email: string,
-  password: string
+  email: string;
+  password: string;
 }
 
 export interface LoginResponse {
@@ -38,7 +38,17 @@ export const signup = async (data: SignupData): Promise<SignupResponse> => {
 };
 
 export const login = async (data: LoginData): Promise<LoginResponse> => {
-  const response = await api.post("/auth/login", data)
+  const response = await api.post("/auth/login", data);
 
-  return response.data
-}
+  return response.data;
+};
+
+export const getCurrentUser = async () => {
+  const response = await api.get("/auth/me");
+  return response.data;
+};
+
+export const logout = async () => {
+  const response = await api.post("/auth/logout");
+  return response.data;
+};

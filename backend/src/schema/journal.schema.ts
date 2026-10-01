@@ -16,3 +16,7 @@ export const UpdateJournalEntrySchema = z.object({
   succeeded: z.boolean("Succeeded must be a boolean"),
   targetDate: z.coerce.date("Target date must be valid"),
 });
+
+export const JournalDateQuerySchema = z.object({
+  date: z.string().date(),
+});

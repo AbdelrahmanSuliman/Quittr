@@ -4,6 +4,7 @@ import {
   fetchAllAddictionsService,
   deleteAddictionService,
   updateAddictionService,
+  fetchAllPartneredAddictionsService
 } from "../services/addiction.services";
 import { StatusCodes } from "http-status-codes";
 
@@ -43,6 +44,31 @@ export async function fetchAddictionsController(
   }
 }
 
+export async function fetchPartneredAddictionsController(
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) {
+  const userId = req.user!.userId;
+  const page = Number(req.query.page);
+  const limit = Number(req.query.limit);
+
+  try {
+    const addictions = await fetchAllPartneredAddictionsService(
+      userId,
+      page,
+      limit,
+    );
+
+    res.status(StatusCodes.OK).send({
+      message: "Partnered addictions fetched successfully",
+      data: addictions,
+    });
+  } catch (err) {
+    next(err);
+  }
+}
+
 export async function deleteAddictionController(
   req: Request<{ addictionId: string }>,
   res: Response,
@@ -68,9 +94,9 @@ export async function updateAddictionController(
 ) {
   const addictionId = req.params.addictionId;
   const userId = req.user!.userId;
-  const { addictionName } = req.body;
+  const { name } = req.body;
   try {
-    await updateAddictionService(addictionId, addictionName, userId);
+    await updateAddictionService(addictionId, name, userId);
 
     res
       .status(StatusCodes.OK)

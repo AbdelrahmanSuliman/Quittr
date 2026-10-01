@@ -12,7 +12,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useState } from "react";
 import { useNavigate } from "react-router";
-import useLogin from "@/hooks/useLogin";
+import useLogin from "@/hooks/auth/useLogin";
 import axios from "axios";
 
 function Login() {
@@ -63,7 +63,7 @@ function Login() {
         <CardHeader>
           <CardTitle>Login to your account</CardTitle>
           <CardDescription>
-            Enter your email below to login to your account
+            Today you are a <span className="font-logo font-bold">Quittr</span>.
           </CardDescription>
           <CardAction>
             <Button variant="link" onClick={() => navigate("/signup")}>
