@@ -6,8 +6,10 @@
   "scripts": {
     "start": "node dist/index.js",
     "start:prod": "npx drizzle-kit migrate && node dist/index.js",
+    "typecheck": "tsc --noEmit",
     "build": "tsup",
     "test": "vitest run",
+    "ci": "npm run typecheck && npm run test && npm run build",
     "dev": "docker compose up -d && nodemon --exec tsx ./src/index.ts | pino-pretty"
   },
   "keywords": [],
