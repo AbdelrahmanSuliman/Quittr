@@ -20,8 +20,8 @@ export async function signupController(
     const token = generateToken(user.id, user.username);
     res.cookie("token", token, {
       httpOnly: true,
-      sameSite: "strict",
-      secure: config.nodeEnv === "PRODUCTION",
+      sameSite: config.nodeEnv === "production" ? "none" : "lax",
+      secure: config.nodeEnv === "production",
       maxAge: 60 * 60 * 1000,
       path: "/",
     });
